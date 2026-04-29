@@ -41,14 +41,14 @@ export async function upsertEquipment(formData: any) {
 
   let error;
   if (formData.id) {
-    const { error: updateError } = await supabase
-      .from("equipment")
+    const { error: updateError } = await (supabase
+      .from("equipment") as any)
       .update(payload)
       .eq("id", formData.id);
     error = updateError;
   } else {
-    const { error: insertError } = await supabase
-      .from("equipment")
+    const { error: insertError } = await (supabase
+      .from("equipment") as any)
       .insert([payload]);
     error = insertError;
   }

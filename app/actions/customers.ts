@@ -29,8 +29,8 @@ export async function upsertCustomer(formData: any) {
   let result;
   let error;
   if (formData.id) {
-    const { data, error: updateError } = await supabase
-      .from("customers")
+    const { data, error: updateError } = await (supabase
+      .from("customers") as any)
       .update(payload)
       .eq("id", formData.id)
       .select()
@@ -38,8 +38,8 @@ export async function upsertCustomer(formData: any) {
     error = updateError;
     result = data;
   } else {
-    const { data, error: insertError } = await supabase
-      .from("customers")
+    const { data, error: insertError } = await (supabase
+      .from("customers") as any)
       .insert([payload])
       .select()
       .single();

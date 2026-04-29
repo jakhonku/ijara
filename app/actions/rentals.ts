@@ -20,8 +20,8 @@ export async function createRental(data: {
   if (rpcError) throw new Error(rpcError.message);
 
   // 2. Create rental
-  const { data: rental, error: rentalError } = await supabase
-    .from("rentals")
+  const { data: rental, error: rentalError } = await (supabase
+    .from("rentals") as any)
     .insert([{
       rental_number: rentalNumber,
       customer_id: data.customer_id,
@@ -59,7 +59,7 @@ export async function createRental(data: {
     };
   });
 
-  const { error: itemsError } = await supabase.from("rental_items").insert(itemsToInsert);
+  const { error: itemsError } = await (supabase.from("rental_items") as any).insert(itemsToInsert);
   if (itemsError) throw new Error(itemsError.message);
 
   revalidatePath("/rentals");
@@ -93,8 +93,8 @@ export async function getRentals() {
 
 export async function closeRental(id: string) {
   const supabase = await createClient();
-  const { error } = await supabase
-    .from("rentals")
+  const { error } = await (supabase
+    .from("rentals") as any)
     .update({ 
       status: "closed",
       actual_return_date: new Date().toISOString().split("T")[0]
