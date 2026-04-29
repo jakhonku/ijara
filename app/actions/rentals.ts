@@ -40,15 +40,15 @@ export async function createRental(data: {
   // 3. Create rental items
   // We need snapshots of equipment names and units
   const equipmentIds = data.items.map(i => i.equipment_id);
-  const { data: equipmentData } = await supabase
-    .from("equipment")
+  const { data: equipmentData } = await (supabase
+    .from("equipment") as any)
     .select("id, name, unit")
     .in("id", equipmentIds);
 
   const itemsToInsert = data.items.map(item => {
-    const eq = equipmentData?.find(e => e.id === item.equipment_id);
+    const eq = (equipmentData as any)?.find((e: any) => e.id === item.equipment_id);
     return {
-      rental_id: rental.id,
+      rental_id: (rental as any).id,
       equipment_id: item.equipment_id,
       equipment_name_snapshot: eq?.name || "Noma'lum",
       unit_snapshot: eq?.unit || "dona",
@@ -65,7 +65,7 @@ export async function createRental(data: {
   revalidatePath("/rentals");
   revalidatePath("/");
   
-  return rental;
+  return rental as any;
 }
 
 export async function getRentals() {
