@@ -10,7 +10,8 @@ import {
   ChevronLeft, 
   Plus, 
   Trash2,
-  CheckCircle2
+  CheckCircle2,
+  Search
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -38,6 +39,12 @@ export function NewRentalForm({ customers, inventory }: NewRentalFormProps) {
 
   // Form State
   const [customerId, setCustomerId] = useState(initialCustomerId);
+  const [search, setSearch] = useState(() => {
+    if (initialCustomerId) {
+      return customers.find(c => c.id === initialCustomerId)?.full_name || "";
+    }
+    return "";
+  });
   const [selectedItems, setSelectedItems] = useState<{ equipment_id: string; quantity: number; daily_price: number }[]>([]);
   const [startDate, setStartDate] = useState(format(new Date(), "yyyy-MM-dd"));
   const [endDate, setEndDate] = useState(format(addDays(new Date(), 1), "yyyy-MM-dd"));
@@ -147,19 +154,51 @@ export function NewRentalForm({ customers, inventory }: NewRentalFormProps) {
           {step === 1 && (
             <div className="space-y-4">
               <div className="space-y-2">
-                <Label>Mijoz</Label>
-                <Select value={customerId} onValueChange={setCustomerId}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Mijozni tanlang" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {customers.map((c) => (
-                      <SelectItem key={c.id} value={c.id}>
-                        {c.full_name} ({c.phone})
-                      </SelectItem>
+                <Label>Mijozni qidirish (Ism, telefon yoki pasport)</Label>
+                <div className="relative">
+                  <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                  <Input 
+                    placeholder="Qidirish..." 
+                    className="pl-9"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                  />
+                </div>
+                
+                <div className="border rounded-md max-h-[200px] overflow-y-auto mt-2 bg-muted/20">
+                  {customers
+                    .filter(c => 
+                      c.full_name.toLowerCase().includes(search.toLowerCase()) || 
+                      c.phone.includes(search) ||
+                      (c.passport && c.passport.toLowerCase().includes(search.toLowerCase()))
+                    )
+                    .map((c) => (
+                      <div 
+                        key={c.id}
+                        onClick={() => {
+                          setCustomerId(c.id);
+                          setSearch(c.full_name); // Show selected name in search
+                        }}
+                        className={`flex flex-col p-2 cursor-pointer hover:bg-primary/10 border-b last:border-0 transition-colors ${
+                          customerId === c.id ? "bg-primary/20 border-primary/30" : ""
+                        }`}
+                      >
+                        <span className="font-medium text-sm">{c.full_name}</span>
+                        <div className="flex justify-between text-[10px] text-muted-foreground">
+                          <span>{c.phone}</span>
+                          {c.passport && <span>{c.passport}</span>}
+                        </div>
+                      </div>
                     ))}
-                  </SelectContent>
-                </Select>
+                  {customers.filter(c => 
+                    c.full_name.toLowerCase().includes(search.toLowerCase()) || 
+                    c.phone.includes(search)
+                  ).length === 0 && (
+                    <div className="p-4 text-center text-sm text-muted-foreground">
+                      Mijoz topilmadi
+                    </div>
+                  )}
+                </div>
               </div>
               <div className="pt-4 border-t">
                 <p className="text-sm text-muted-foreground mb-2 text-center">Yoki yangi mijoz qo'shing</p>

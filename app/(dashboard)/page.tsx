@@ -133,7 +133,7 @@ export default function DashboardPage() {
                         borderColor: "hsl(var(--border))",
                         borderRadius: "var(--radius)",
                       }}
-                      formatter={(value: number) => [formatCurrency(value), "Tushum"]}
+                      formatter={(value: any) => [formatCurrency(Number(value) || 0), "Tushum"]}
                     />
                     <Area
                       type="monotone"
