@@ -11,8 +11,8 @@ export async function createPayment(data: {
 }) {
   const supabase = await createClient();
 
-  const { data: payment, error } = await supabase
-    .from("payments")
+  const { data: payment, error } = await (supabase
+    .from("payments") as any)
     .insert([{
       rental_id: data.rental_id,
       amount: data.amount,
